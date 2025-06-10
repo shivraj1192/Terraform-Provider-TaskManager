@@ -9,7 +9,7 @@ terraform {
 
 provider "taskmanager" {
   base_url = "http://localhost:8080/"
-  token    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3NDk2MTgwNzUsInVzZXJfaWQiOjF9.ZctJvp90AVQFYU55TCfhtGscWrHPMoyk-GCamtCOa9A"
+  token    = "your-api-key"
 }
 
 resource "taskmanager_team" "team1" {
