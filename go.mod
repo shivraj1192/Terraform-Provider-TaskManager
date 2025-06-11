@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.37.0
+	github.com/mitchellh/go-homedir v1.1.0
 	golang.org/x/crypto v0.38.0
 )
 
