@@ -30,10 +30,10 @@ jobs:
         run: go mod download
 
       - name: Start TaskManager backend
-        working-directory: ./backend
+        working-directory: ./cmd
         run: |
-          go run main.go &   # Start backend server
-          sleep 5            # Give it time to be ready
+          go run main.go &
+          sleep 5
 
       - name: Run Acceptance Tests
         env:
