@@ -10,19 +10,15 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      TF_ACC: ${{ secrets.TF_ACC }}
-      BASE_URL: ${{ secrets.BASE_URL }}
-      TOKEN: ${{ secrets.TOKEN }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
-
-      - name: Run All Acceptance Tests
-        run: go test -v ./test_taskmanager
+          go-version: '1.22'
+      - name: Run tests
+        env:
+          TF_ACC: 1
+          BASE_URL: ${{ secrets.BASE_URL }}
+          TOKEN: ${{ secrets.TOKEN }}
+        run: go test ./test_taskmanager -v
