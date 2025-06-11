@@ -1,4 +1,4 @@
-package testtaskmanager_test
+package test_taskmanager
 
 import (
 	"context"

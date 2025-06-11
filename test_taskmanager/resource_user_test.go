@@ -1,25 +1,36 @@
-package testtaskmanager_test
+package test_taskmanager
 
 import (
 	"fmt"
 	"os"
 	"testing"
 
+	"terraform-provider-taskmanager/taskmanager"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestTaskmanagerUser(t *testing.T) {
+	baseURL := os.Getenv("BASE_URL")
+	token := os.Getenv("TOKEN")
+
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		ProviderFactories: map[string]func() (*schema.Provider, error){
+			"taskmanager": func() (*schema.Provider, error) {
+				return taskmanager.Provider("dev"), nil
+			},
+		},
+		PreCheck: func() {
+			if baseURL == "" || token == "" {
+				t.Fatal("BASE_URL and TOKEN must be set for acceptance tests")
+			}
+		},
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckTaskmanagerUserConfig(),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckTaskmanagerUserExists("taskmanager_user.user_new"),
-					testAccCheckTaskmanagerUserExists("taskmanager_user.user_new1"),
-				),
+				Check:  testAccCheckTaskmanagerUserExists("taskmanager_user.user_new"),
 			},
 		},
 	})
@@ -28,11 +39,6 @@ func TestTaskmanagerUser(t *testing.T) {
 // Written tests
 func testAccCheckTaskmanagerUserConfig() string {
 	return fmt.Sprintf(`
-provider "taskmanager" {
-  base_url = "%s"
-  token    = "%s"
-}
-
 resource "taskmanager_user" "user_new" {
   uname    = "AT - TASKMANAGER UNAME"
   name     = "AT - TASKMANAGER NAME"
@@ -40,7 +46,7 @@ resource "taskmanager_user" "user_new" {
   password = "AT - TASKMANAGER PASSWORD"
   role     = "Member"
 }
-`, os.Getenv("BASE_URL"), os.Getenv("TOKEN"))
+`)
 }
 
 func testAccCheckTaskmanagerUserExists(resourceName string) resource.TestCheckFunc {
