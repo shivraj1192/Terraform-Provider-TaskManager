@@ -17,6 +17,7 @@ func TestTaskmanagerUser(t *testing.T) {
 				Config: testAccCheckTaskmanagerUserConfig(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckTaskmanagerUserExists("taskmanager_user.user_new"),
+					testAccCheckTaskmanagerUserExists("taskmanager_user.user_new1"),
 				),
 			},
 		},
@@ -24,37 +25,34 @@ func TestTaskmanagerUser(t *testing.T) {
 }
 
 func testAccCheckTaskmanagerUserConfig() string {
-	return fmt.Sprintf(`
-	resource "taskmanager_user" "user_new" {
-	uname = "AT - TASKMANAGER UNAME"
-	name = "AT - TASKMANAGER NAME"
-	email = "AT.TASKMANAGER@gmail.com"
-	password = "AT - TASKMANAGER PASSWORD"
-	role = "Member"
-	}
-
-	resource "taskmanager_user" "user_new1" {
-	uname = "AT - TASKMANAGER UNAME1"
-	name = "AT - TASKMANAGER NAME1"
-	email = "AT.TASKMANAGER1@gmail.com"
-	password = "AT - TASKMANAGER PASSWORD1"
-	role = "Member"
-	}
-	`)
+	return `
+resource "taskmanager_user" "user_new" {
+  uname    = "AT - TASKMANAGER UNAME"
+  name     = "AT - TASKMANAGER NAME"
+  email    = "AT.TASKMANAGER@gmail.com"
+  password = "AT - TASKMANAGER PASSWORD"
+  role     = "Member"
 }
 
-func testAccCheckTaskmanagerUserExists(n string) resource.TestCheckFunc {
+resource "taskmanager_user" "user_new1" {
+  uname    = "AT - TASKMANAGER UNAME1"
+  name     = "AT - TASKMANAGER NAME1"
+  email    = "AT.TASKMANAGER1@gmail.com"
+  password = "AT - TASKMANAGER PASSWORD1"
+  role     = "Member"
+}
+`
+}
+
+func testAccCheckTaskmanagerUserExists(resourceName string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[n]
-
+		rs, ok := s.RootModule().Resources[resourceName]
 		if !ok {
-			return NewNotFoundErrorf("%s in state", n)
+			return fmt.Errorf("resource not found: %s", resourceName)
 		}
-
 		if rs.Primary.ID == "" {
-			return NewNotFoundErrorf("ID for %s in state", n)
+			return fmt.Errorf("no ID set for resource: %s", resourceName)
 		}
-
 		return nil
 	}
 }
