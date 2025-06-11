@@ -2,6 +2,7 @@ package testtaskmanager_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -26,7 +27,12 @@ func TestTaskmanagerUser(t *testing.T) {
 
 // Written tests
 func testAccCheckTaskmanagerUserConfig() string {
-	return `
+	return fmt.Sprintf(`
+provider "taskmanager" {
+  base_url = "%s"
+  token    = "%s"
+}
+
 resource "taskmanager_user" "user_new" {
   uname    = "AT - TASKMANAGER UNAME"
   name     = "AT - TASKMANAGER NAME"
@@ -34,7 +40,7 @@ resource "taskmanager_user" "user_new" {
   password = "AT - TASKMANAGER PASSWORD"
   role     = "Member"
 }
-`
+`, os.Getenv("BASE_URL"), os.Getenv("TOKEN"))
 }
 
 func testAccCheckTaskmanagerUserExists(resourceName string) resource.TestCheckFunc {
