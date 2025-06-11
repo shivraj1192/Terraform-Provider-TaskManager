@@ -1,10 +1,7 @@
 name: Acceptance Tests
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -26,18 +23,18 @@ jobs:
           path: backend
 
       - name: Download Go modules for backend
-        working-directory: ./backend
+        working-directory: backend
         run: go mod download
 
       - name: Start TaskManager backend
-        working-directory: ./cmd
+        working-directory: backend
         run: |
-          go run main.go &
+          go run ./cmd/main.go &
           sleep 5
 
       - name: Run Acceptance Tests
         env:
           TF_ACC: 1
-          BASE_URL: http://localhost:8080
+          BASE_URL: http://localhost:8080/
           TOKEN: ${{ secrets.TOKEN }}
         run: go test -v ./test_taskmanager
