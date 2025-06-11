@@ -11,14 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout provider repo
+        uses: actions/checkout@v4
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.22'
-      - name: Run tests
+
+      - name: Checkout TaskManager backend repo
+        uses: actions/checkout@v4
+        with:
+          repository: shivraj1192/TaskManager-Go
+          path: backend
+
+      - name: Download Go modules for backend
+        working-directory: ./backend
+        run: go mod download
+
+      - name: Start TaskManager backend
+        working-directory: ./backend
+        run: |
+          go run main.go &   # Start backend server
+          sleep 5            # Give it time to be ready
+
+      - name: Run Acceptance Tests
         env:
           TF_ACC: 1
-          BASE_URL: ${{ secrets.BASE_URL }}
+          BASE_URL: http://localhost:8080
           TOKEN: ${{ secrets.TOKEN }}
-        run: go test ./test_taskmanager -v
+        run: go test -v ./test_taskmanager
