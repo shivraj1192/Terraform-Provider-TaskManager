@@ -29,7 +29,7 @@ jobs:
       - name: Start TaskManager backend
         working-directory: backend
         run: |
-          go run ./cmd/main.go &
+          nohup go run ./cmd/main.go > server.log 2>&1 &
           sleep 5
 
       - name: Run Acceptance Tests
@@ -38,3 +38,7 @@ jobs:
           BASE_URL: http://localhost:8080/
           TOKEN: ${{ secrets.TOKEN }}
         run: go test -v ./test_taskmanager
+
+      - name: Show backend logs
+        if: always()
+        run: cat backend/server.log
