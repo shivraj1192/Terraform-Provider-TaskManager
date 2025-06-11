@@ -24,6 +24,7 @@ func TestTaskmanagerUser(t *testing.T) {
 	})
 }
 
+// Written tests
 func testAccCheckTaskmanagerUserConfig() string {
 	return `
 resource "taskmanager_user" "user_new" {
