@@ -22,12 +22,10 @@ var (
 
 func init() {
 	testAccProvider = taskmanager.Provider(testVersion)
-
 	raw := map[string]interface{}{
 		"base_url": os.Getenv("BASE_URL"),
 		"token":    os.Getenv("TOKEN"),
 	}
-
 	testAccProvider.Configure(context.Background(), terraform.NewResourceConfigRaw(raw))
 
 	testAccProviders = map[string]*schema.Provider{

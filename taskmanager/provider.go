@@ -42,6 +42,10 @@ func configureProviderClient(ctx context.Context, d *schema.ResourceData) (inter
 	baseURL := d.Get("base_url").(string)
 	token := d.Get("token").(string)
 
+	if baseURL == "" || token == "" {
+		return nil, diag.Errorf("base_url and token must be set")
+	}
+
 	client := NewClient(baseURL, token)
 
 	return client, nil
