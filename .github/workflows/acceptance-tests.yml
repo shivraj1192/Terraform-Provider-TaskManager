@@ -1,0 +1,28 @@
+name: Acceptance Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      TF_ACC: ${{ secrets.TF_ACC }}
+      BASE_URL: ${{ secrets.BASE_URL }}
+      TOKEN: ${{ secrets.TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Run All Acceptance Tests
+        run: go test -v ./test_taskmanager
