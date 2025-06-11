@@ -32,6 +32,14 @@ func testAccCheckTaskmanagerUserConfig() string {
 	password = "AT - TASKMANAGER PASSWORD"
 	role = "Member"
 	}
+
+	resource "taskmanager_user" "user_new1" {
+	uname = "AT - TASKMANAGER UNAME1"
+	name = "AT - TASKMANAGER NAME1"
+	email = "AT.TASKMANAGER1@gmail.com"
+	password = "AT - TASKMANAGER PASSWORD1"
+	role = "Member"
+	}
 	`)
 }
 
