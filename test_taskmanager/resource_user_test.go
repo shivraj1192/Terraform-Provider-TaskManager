@@ -36,7 +36,6 @@ func TestTaskmanagerUser(t *testing.T) {
 	})
 }
 
-// Written tests for user
 func testAccCheckTaskmanagerUserConfig() string {
 	return fmt.Sprintf(`
 resource "taskmanager_user" "user_new" {
