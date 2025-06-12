@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
@@ -43,6 +44,15 @@ jobs:
       - name: Download Go modules for backend
         working-directory: backend
         run: go mod download
+
+      - name: Create .env file
+        working-directory: backend
+        run: |
+          echo DB_HOST=localhost >> .env
+          echo DB_PORT=5432 >> .env
+          echo DB_USER=${{ secrets.DB_USER }} >> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_NAME=taskmanager >> .env
 
       - name: Start TaskManager backend
         working-directory: backend
