@@ -15,8 +15,8 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: shivraj
-          POSTGRES_PASSWORD: shivraj123
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
           POSTGRES_DB: taskmanager
         ports:
           - 5432:5432
@@ -53,6 +53,10 @@ jobs:
           echo DB_USER=${{ secrets.DB_USER }} >> .env
           echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
           echo DB_NAME=taskmanager >> .env
+
+      - name: DEBUG - Print .env file
+        working-directory: backend
+        run: cat .env
 
       - name: Start TaskManager backend
         working-directory: backend
