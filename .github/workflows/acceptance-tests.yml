@@ -54,6 +54,9 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
+      - name: Make get_token.sh executable
+        run: chmod +x get_token.sh
+
       - name: Get token for test user
         run: ./get_token.sh
 
