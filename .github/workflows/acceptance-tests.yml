@@ -61,7 +61,7 @@ jobs:
           BASE_URL: http://localhost:8080/
           TOKEN: ${{ secrets.TOKEN }}
         run: go test -v ./test_taskmanager
-          # print logd
+        
       - name: Show backend logs
         if: always()
         run: cat backend/server.log
