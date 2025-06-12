@@ -45,15 +45,6 @@ jobs:
         working-directory: backend
         run: go mod download
 
-      - name: Create .env file
-        working-directory: backend
-        run: |
-          echo DB_HOST=localhost >> .env
-          echo DB_PORT=5432 >> .env
-          echo DB_USER=${{ secrets.DB_USER }} >> .env
-          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
-          echo DB_NAME=taskmanager >> .env
-
       - name: DEBUG - Print .env file
         working-directory: backend
         run: cat .env
