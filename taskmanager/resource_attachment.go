@@ -37,7 +37,7 @@ func resourceAttachment() *schema.Resource {
 			},
 			"uploader_id": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 			},
 		},
 	}
@@ -47,9 +47,7 @@ func resourceCreateAttachment(ctx context.Context, d *schema.ResourceData, m int
 	client := m.(*TaskManagerClient)
 
 	taskID := d.Get("task_id").(int)
-	// uploaderID := d.Get("uploader_id").(int)
 	filePath := d.Get("url").(string)
-	// fileName := d.Get("file_name").(string)
 
 	absPath, err := filepath.Abs(filepath.Clean(filePath))
 	if err != nil {

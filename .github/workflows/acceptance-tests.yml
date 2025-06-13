@@ -5,24 +5,68 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      TF_ACC: ${{ secrets.TF_ACC }}
-      BASE_URL: ${{ secrets.BASE_URL }}
-      TOKEN: ${{ secrets.TOKEN }}
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: taskmanager
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Terraform provider repo
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22'
 
-      - name: Run All Acceptance Tests
+      - name: Checkout TaskManager backend
+        uses: actions/checkout@v4
+        with:
+          repository: shivraj1192/TaskManager-Go
+          path: backend
+
+      - name: Download Go modules for backend
+        working-directory: backend
+        run: go mod download
+
+      - name: Start TaskManager backend
+        working-directory: backend
+        run: |
+          nohup go run ./cmd/main.go > server.log 2>&1 &
+          sleep 5
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Make get_token.sh executable
+        run: chmod +x get_token.sh
+
+      - name: Get token for test user
+        run: ./get_token.sh
+
+      - name: Run Acceptance Tests
+        env:
+          TF_ACC: 1
+          BASE_URL: http://localhost:8080/
+          TOKEN: ${{ env.TOKEN }}
         run: go test -v ./test_taskmanager
+
+      - name: Show backend logs
+        if: always()
+        run: cat backend/server.log

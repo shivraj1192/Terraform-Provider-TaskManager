@@ -23,7 +23,7 @@ func resourceComment() *schema.Resource {
 			},
 			"user_id": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 			},
 			"task_id": {
 				Type:     schema.TypeInt,
