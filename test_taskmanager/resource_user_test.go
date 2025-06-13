@@ -15,7 +15,13 @@ func TestTaskmanagerUser(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckTaskmanagerUserConfig(),
-				Check:  testAccCheckTaskmanagerUserExists("taskmanager_user.user_new"),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckTaskmanagerUserExists("taskmanager_user.user_new"),
+					testAccCheckTaskmanagerUserExists("taskmanager_team.team_new"),
+					testAccCheckTaskmanagerUserExists("taskmanager_task.task_new"),
+					testAccCheckTaskmanagerUserExists("taskmanager_comment.comment_new"),
+					testAccCheckTaskmanagerUserExists("taskmanager_attachment.attachment_new"),
+				),
 			},
 		},
 	})
@@ -29,6 +35,36 @@ resource "taskmanager_user" "user_new" {
   email    = "AT.TASKMANAGER@gmail.com"
   password = "AT - TASKMANAGER PASSWORD"
   role     = "Member"
+}
+
+resource "taskmanager_team" "team_new" {
+  name        = "AT - TASKMANAGER NAME"
+  description = "AT - TASKMANAGER DESC"
+  members     = [taskmanager_user.user_new.id]
+}
+
+resource "taskmanager_task" "task_new" {
+  title = "AT - TASKMANAGER TITLE"
+  description = "AT - TASKMANAGER DESC"
+  priority = "High"
+  status = "In progress"
+  due_date = "2025-06-25T18:30:00Z"
+  team_id = taskmanager_team.team_new.id
+  parent_task_id = 0
+  assignees = [taskmanager_user.user_new.id]
+  labels = []
+}
+
+resource "taskmanager_comment" "comment_new"{
+  content = "AT - TASKMANAGER CONTENT"
+  task_id = taskmanager_task.task_new.id
+  parent_comment_id = 0
+}
+
+resource "taskmanager_attachment" "attachment_new"{
+  file_name = "infralovers_courses.pdf"
+  task_id = taskmanager_task.task1.id
+  url = "./static/files/infralovers_courses.pdf"
 }
 `)
 }
