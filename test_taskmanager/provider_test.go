@@ -15,21 +15,27 @@ import (
 )
 
 var (
-	testAccProviders map[string]*schema.Provider
 	testAccProvider  *schema.Provider
+	testAccProviders map[string]func() (*schema.Provider, error)
 	testVersion      = "1.0.0"
 )
 
 func init() {
 	testAccProvider = taskmanager.Provider(testVersion)
+
 	raw := map[string]interface{}{
 		"base_url": os.Getenv("BASE_URL"),
 		"token":    os.Getenv("TOKEN"),
 	}
-	testAccProvider.Configure(context.Background(), terraform.NewResourceConfigRaw(raw))
 
-	testAccProviders = map[string]*schema.Provider{
-		"taskmanager": testAccProvider,
+	if err := testAccProvider.Configure(context.Background(), terraform.NewResourceConfigRaw(raw)); err != nil {
+		fmt.Println("Warning: Provider configuration in init failed:", err)
+	}
+
+	testAccProviders = map[string]func() (*schema.Provider, error){
+		"taskmanager": func() (*schema.Provider, error) {
+			return taskmanager.Provider(testVersion), nil
+		},
 	}
 }
 

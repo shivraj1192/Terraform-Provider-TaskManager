@@ -2,31 +2,16 @@ package test_taskmanager
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
-	"terraform-provider-taskmanager/taskmanager"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestTaskmanagerUser(t *testing.T) {
-	baseURL := os.Getenv("BASE_URL")
-	token := os.Getenv("TOKEN")
-
 	resource.Test(t, resource.TestCase{
-		ProviderFactories: map[string]func() (*schema.Provider, error){
-			"taskmanager": func() (*schema.Provider, error) {
-				return taskmanager.Provider("dev"), nil
-			},
-		},
-		PreCheck: func() {
-			if baseURL == "" || token == "" {
-				t.Fatal("BASE_URL and TOKEN must be set for acceptance tests")
-			}
-		},
+		ProviderFactories: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckTaskmanagerUserConfig(),
