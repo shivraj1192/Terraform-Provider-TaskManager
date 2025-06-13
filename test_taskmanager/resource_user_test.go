@@ -63,7 +63,7 @@ resource "taskmanager_comment" "comment_new"{
 
 resource "taskmanager_attachment" "attachment_new"{
   file_name = "infralovers_courses.pdf"
-  task_id = taskmanager_task.task1.id
+  task_id = taskmanager_task.task_new.id
   url = "./static/files/infralovers_courses.pdf"
 }
 `)
