@@ -39,6 +39,7 @@ func resourceTask() *schema.Resource {
 			"creator_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"team_id": {
 				Type:     schema.TypeInt,
