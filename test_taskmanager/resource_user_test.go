@@ -40,7 +40,7 @@ resource "taskmanager_user" "user_new" {
 resource "taskmanager_team" "team_new" {
   name        = "AT - TASKMANAGER NAME"
   description = "AT - TASKMANAGER DESC"
-  members     = [taskmanager_user.user_new.id]
+  members     = [1, taskmanager_user.user_new.id]
 }
 
 resource "taskmanager_task" "task_new" {
