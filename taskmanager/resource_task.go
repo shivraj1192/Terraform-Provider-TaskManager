@@ -50,35 +50,35 @@ func resourceTask() *schema.Resource {
 				Optional: true,
 			},
 			"subtasks": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"assignees": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"labels": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"comments": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"attachments": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
@@ -232,12 +232,68 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("priority", result["priority"])
 	d.Set("creator_id", result["creator_id"])
 	d.Set("team_id", result["team_id"])
-	d.Set("assignees", result["assignees"])
+
+	var assigneeIDs []int
+	if assigneesRaw, ok := result["assignees"].([]interface{}); ok {
+		for _, assignee := range assigneesRaw {
+			if assigneeMap, ok := assignee.(map[string]interface{}); ok {
+				if idFloat, ok := assigneeMap["ID"].(float64); ok {
+					assigneeIDs = append(assigneeIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	d.Set("assignees", assigneeIDs)
+
 	d.Set("parent_task_id", result["parent_task_id"])
-	d.Set("subtasks", result["subtasks"])
-	d.Set("labels", result["labels"])
-	d.Set("comments", result["comments"])
-	d.Set("attachments", result["attachments"])
+
+	var subTaskIDs []int
+	if subTaskRaw, ok := result["subtasks"].([]interface{}); ok {
+		for _, subTask := range subTaskRaw {
+			if subTaskMap, ok := subTask.(map[string]interface{}); ok {
+				if idFloat, ok := subTaskMap["ID"].(float64); ok {
+					subTaskIDs = append(subTaskIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	d.Set("subtasks", subTaskIDs)
+
+	var labelIDs []int
+	if labelRaw, ok := result["labels"].([]interface{}); ok {
+		for _, label := range labelRaw {
+			if labelMap, ok := label.(map[string]interface{}); ok {
+				if idFloat, ok := labelMap["ID"].(float64); ok {
+					labelIDs = append(labelIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	d.Set("labels", labelIDs)
+
+	var commentIDs []int
+	if commentRaw, ok := result["comments"].([]interface{}); ok {
+		for _, comment := range commentRaw {
+			if commentMap, ok := comment.(map[string]interface{}); ok {
+				if idFloat, ok := commentMap["ID"].(float64); ok {
+					commentIDs = append(commentIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	d.Set("comments", commentIDs)
+
+	var attachmantIDs []int
+	if attachmantRaw, ok := result["attachments"].([]interface{}); ok {
+		for _, attachmant := range attachmantRaw {
+			if attachmantMap, ok := attachmant.(map[string]interface{}); ok {
+				if idFloat, ok := attachmantMap["ID"].(float64); ok {
+					attachmantIDs = append(attachmantIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	d.Set("attachments", attachmantIDs)
 
 	return nil
 }
