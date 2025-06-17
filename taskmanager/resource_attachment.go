@@ -136,7 +136,9 @@ func resourceReadAttachment(ctx context.Context, d *schema.ResourceData, m inter
 
 	d.Set("file_name", result["file_name"])
 	d.Set("task_id", result["task_id"])
-	d.Set("uploader_id", result["uploader_id"])
+	if uploaderID, ok := result["uploader_id"].(float64); ok {
+		d.Set("uploader_id", int(uploaderID))
+	}
 
 	return nil
 }

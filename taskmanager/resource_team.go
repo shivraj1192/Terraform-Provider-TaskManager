@@ -132,8 +132,8 @@ func resourceReadTeam(ctx context.Context, d *schema.ResourceData, m interface{}
 	}
 
 	var memberIDs []int
-	if membersRaw, ok := result["members"].(*schema.Set); ok {
-		for _, member := range membersRaw.List() {
+	if membersRaw, ok := result["members"].([]interface{}); ok {
+		for _, member := range membersRaw {
 			if memberMap, ok := member.(map[string]interface{}); ok {
 				if idFloat, ok := memberMap["ID"].(float64); ok {
 					memberIDs = append(memberIDs, int(idFloat))
@@ -144,8 +144,8 @@ func resourceReadTeam(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("members", memberIDs)
 
 	var taskIDs []int
-	if tasksRaw, ok := result["tasks"].(*schema.Set); ok {
-		for _, task := range tasksRaw.List() {
+	if tasksRaw, ok := result["tasks"].([]interface{}); ok {
+		for _, task := range tasksRaw {
 			if taskMap, ok := task.(map[string]interface{}); ok {
 				if idFloat, ok := taskMap["id"].(float64); ok {
 					taskIDs = append(taskIDs, int(idFloat))
