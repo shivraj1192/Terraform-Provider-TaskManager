@@ -109,7 +109,7 @@ func resourceCreateTask(ctx context.Context, d *schema.ResourceData, m interface
 		task["due_date"] = due_date.(string)
 	}
 	if assignees, ok := d.GetOk("assignees"); ok {
-		task["assignee_ids"] = assignees.([]interface{})
+		task["assignee_ids"] = assignees.(*schema.Set).List()
 	}
 	if parentTaskId, ok := d.GetOk("parent_task_id"); ok {
 		task["parent_task_id"] = parentTaskId.(int)
@@ -117,7 +117,7 @@ func resourceCreateTask(ctx context.Context, d *schema.ResourceData, m interface
 		task["parent_task_id"] = 0
 	}
 	if labels, ok := d.GetOk("labels"); ok {
-		task["label_ids"] = labels.([]interface{})
+		task["label_ids"] = labels.(*schema.Set).List()
 	}
 
 	var created map[string]interface{}
@@ -177,7 +177,7 @@ func resourceUpdateTask(ctx context.Context, d *schema.ResourceData, m interface
 
 	task = map[string]interface{}{}
 	if assignees, ok := d.GetOk("assignees"); ok {
-		task["assignees"] = assignees.([]interface{})
+		task["assignees"] = assignees.(*schema.Set).List()
 	}
 	updated = map[string]interface{}{}
 	if err := client.Put("api/tasks/"+d.Id()+"/add-assignee", task, &updated); err != nil {
@@ -203,7 +203,7 @@ func resourceUpdateTask(ctx context.Context, d *schema.ResourceData, m interface
 
 	task = map[string]interface{}{}
 	if labels, ok := d.GetOk("labels"); ok {
-		task["labels"] = labels.([]interface{})
+		task["labels"] = labels.(*schema.Set).List()
 	}
 	updated = map[string]interface{}{}
 	if err := client.Put("api/tasks/"+d.Id()+"/add-labels", task, &updated); err != nil {
