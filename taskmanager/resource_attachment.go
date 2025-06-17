@@ -37,7 +37,7 @@ func resourceAttachment() *schema.Resource {
 			},
 			"uploader_id": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 		},
 	}
