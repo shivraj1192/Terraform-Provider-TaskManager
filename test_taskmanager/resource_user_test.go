@@ -51,7 +51,7 @@ resource "taskmanager_task" "task_new" {
   due_date = "2025-06-25T18:30:00Z"
   team_id = taskmanager_team.team_new.id
   parent_task_id = 0
-  assignees = [taskmanager_user.user_new.id]
+  assignees = [1,taskmanager_user.user_new.id]
   labels = []
 }
 
