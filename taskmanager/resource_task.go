@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -234,8 +235,8 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("team_id", result["team_id"])
 
 	var assigneeIDs []int
-	if assigneesRaw, ok := result["assignees"].(*schema.Set); ok {
-		for _, assignee := range assigneesRaw.List() {
+	if assigneesRaw, ok := result["assignees"].([]interface{}); ok {
+		for _, assignee := range assigneesRaw {
 			if assigneeMap, ok := assignee.(map[string]interface{}); ok {
 				if idFloat, ok := assigneeMap["ID"].(float64); ok {
 					assigneeIDs = append(assigneeIDs, int(idFloat))
@@ -243,13 +244,14 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(assigneeIDs)
 	d.Set("assignees", assigneeIDs)
 
 	d.Set("parent_task_id", result["parent_task_id"])
 
 	var subTaskIDs []int
-	if subTaskRaw, ok := result["subtasks"].(*schema.Set); ok {
-		for _, subTask := range subTaskRaw.List() {
+	if subTaskRaw, ok := result["subtasks"].([]interface{}); ok {
+		for _, subTask := range subTaskRaw {
 			if subTaskMap, ok := subTask.(map[string]interface{}); ok {
 				if idFloat, ok := subTaskMap["ID"].(float64); ok {
 					subTaskIDs = append(subTaskIDs, int(idFloat))
@@ -257,11 +259,12 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(subTaskIDs)
 	d.Set("subtasks", subTaskIDs)
 
 	var labelIDs []int
-	if labelRaw, ok := result["labels"].(*schema.Set); ok {
-		for _, label := range labelRaw.List() {
+	if labelRaw, ok := result["labels"].([]interface{}); ok {
+		for _, label := range labelRaw {
 			if labelMap, ok := label.(map[string]interface{}); ok {
 				if idFloat, ok := labelMap["ID"].(float64); ok {
 					labelIDs = append(labelIDs, int(idFloat))
@@ -269,11 +272,12 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(labelIDs)
 	d.Set("labels", labelIDs)
 
 	var commentIDs []int
-	if commentRaw, ok := result["comments"].(*schema.Set); ok {
-		for _, comment := range commentRaw.List() {
+	if commentRaw, ok := result["comments"].([]interface{}); ok {
+		for _, comment := range commentRaw {
 			if commentMap, ok := comment.(map[string]interface{}); ok {
 				if idFloat, ok := commentMap["ID"].(float64); ok {
 					commentIDs = append(commentIDs, int(idFloat))
@@ -281,11 +285,12 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(commentIDs)
 	d.Set("comments", commentIDs)
 
 	var attachmantIDs []int
-	if attachmantRaw, ok := result["attachments"].(*schema.Set); ok {
-		for _, attachmant := range attachmantRaw.List() {
+	if attachmantRaw, ok := result["attachments"].([]interface{}); ok {
+		for _, attachmant := range attachmantRaw {
 			if attachmantMap, ok := attachmant.(map[string]interface{}); ok {
 				if idFloat, ok := attachmantMap["ID"].(float64); ok {
 					attachmantIDs = append(attachmantIDs, int(idFloat))
@@ -293,6 +298,7 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(attachmantIDs)
 	d.Set("attachments", attachmantIDs)
 
 	return nil
