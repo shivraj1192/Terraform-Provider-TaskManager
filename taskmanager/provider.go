@@ -11,13 +11,15 @@ func Provider(version string) *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"token": {
-				Type:      schema.TypeString,
-				Required:  true,
-				Sensitive: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Sensitive:   true,
+				DefaultFunc: schema.EnvDefaultFunc("TOKEN", nil),
 			},
 			"base_url": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("BASE_URL", nil),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -41,6 +43,10 @@ func Provider(version string) *schema.Provider {
 func configureProviderClient(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	baseURL := d.Get("base_url").(string)
 	token := d.Get("token").(string)
+
+	if baseURL == "" || token == "" {
+		return nil, diag.Errorf("base_url and token must be set")
+	}
 
 	client := NewClient(baseURL, token)
 

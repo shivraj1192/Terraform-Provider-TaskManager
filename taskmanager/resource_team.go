@@ -3,6 +3,7 @@ package taskmanager
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -141,6 +142,7 @@ func resourceReadTeam(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(memberIDs)
 	d.Set("members", memberIDs)
 
 	var taskIDs []int

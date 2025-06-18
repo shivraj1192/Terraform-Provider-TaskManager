@@ -168,8 +168,8 @@ func resourceReadUser(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("role", result["role"])
 
 	var teamIds []int
-	if teamsRaw, ok := result["teams"].([]interface{}); ok {
-		for _, team := range teamsRaw {
+	if teamsRaw, ok := result["teams"].(*schema.Set); ok {
+		for _, team := range teamsRaw.List() {
 			if teamMap, ok := team.(map[string]interface{}); ok {
 				if teamId, ok := teamMap["ID"].(float64); ok {
 					teamIds = append(teamIds, int(teamId))
@@ -180,8 +180,8 @@ func resourceReadUser(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("teams", teamIds)
 
 	var teamCreatedIds []int
-	if teamsRaw, ok := result["tasks_created"].([]interface{}); ok {
-		for _, team := range teamsRaw {
+	if teamsRaw, ok := result["tasks_created"].(*schema.Set); ok {
+		for _, team := range teamsRaw.List() {
 			if teamMap, ok := team.(map[string]interface{}); ok {
 				if teamId, ok := teamMap["ID"].(float64); ok {
 					teamCreatedIds = append(teamCreatedIds, int(teamId))
@@ -192,8 +192,8 @@ func resourceReadUser(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("tasks_created", teamCreatedIds)
 
 	var teamAssignedIds []int
-	if teamsRaw, ok := result["tasks_assigned"].([]interface{}); ok {
-		for _, team := range teamsRaw {
+	if teamsRaw, ok := result["tasks_assigned"].(*schema.Set); ok {
+		for _, team := range teamsRaw.List() {
 			if teamMap, ok := team.(map[string]interface{}); ok {
 				if teamId, ok := teamMap["ID"].(float64); ok {
 					teamAssignedIds = append(teamAssignedIds, int(teamId))
@@ -204,8 +204,8 @@ func resourceReadUser(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("tasks_assigned", teamAssignedIds)
 
 	var commentIds []int
-	if commentsRaw, ok := result["comments"].([]interface{}); ok {
-		for _, comment := range commentsRaw {
+	if commentsRaw, ok := result["comments"].(*schema.Set); ok {
+		for _, comment := range commentsRaw.List() {
 			if commentMap, ok := comment.(map[string]interface{}); ok {
 				if commentId, ok := commentMap["ID"].(float64); ok {
 					commentIds = append(commentIds, int(commentId))
@@ -216,8 +216,8 @@ func resourceReadUser(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("comments", commentIds)
 
 	var attachmentIds []int
-	if attachmentRaw, ok := result["attachments"].([]interface{}); ok {
-		for _, attachment := range attachmentRaw {
+	if attachmentRaw, ok := result["attachments"].(*schema.Set); ok {
+		for _, attachment := range attachmentRaw.List() {
 			if attachmentMap, ok := attachment.(map[string]interface{}); ok {
 				if attachmentId, ok := attachmentMap["ID"].(float64); ok {
 					attachmentIds = append(attachmentIds, int(attachmentId))
@@ -228,8 +228,8 @@ func resourceReadUser(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("attachments", attachmentIds)
 
 	var notificationIds []int
-	if notificationsRaw, ok := result["notifications"].([]interface{}); ok {
-		for _, notification := range notificationsRaw {
+	if notificationsRaw, ok := result["notifications"].(*schema.Set); ok {
+		for _, notification := range notificationsRaw.List() {
 			if notificationMap, ok := notification.(map[string]interface{}); ok {
 				if notificationId, ok := notificationMap["ID"].(float64); ok {
 					notificationIds = append(notificationIds, int(notificationId))

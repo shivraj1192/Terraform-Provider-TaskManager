@@ -23,7 +23,8 @@ func resourceComment() *schema.Resource {
 			},
 			"user_id": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
+				Computed: true,
 			},
 			"task_id": {
 				Type:     schema.TypeInt,
@@ -110,7 +111,18 @@ func resourceReadComment(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("user_id", result["user_id"])
 	d.Set("task_id", result["task_id"])
 	d.Set("parent_comment_id", result["parent_comment_id"])
-	d.Set("subcomments", result["subcomments"])
+
+	var subCommentIDs []int
+	if subCommentRaw, ok := result["subcomments"].(*schema.Set); ok {
+		for _, subCommant := range subCommentRaw.List() {
+			if subCommentMap, ok := subCommant.(map[string]interface{}); ok {
+				if idFloat, ok := subCommentMap["ID"].(float64); ok {
+					subCommentIDs = append(subCommentIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	d.Set("subcomments", subCommentIDs)
 
 	return nil
 }

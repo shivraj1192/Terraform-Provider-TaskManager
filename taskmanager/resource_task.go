@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -39,6 +40,7 @@ func resourceTask() *schema.Resource {
 			"creator_id": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"team_id": {
 				Type:     schema.TypeInt,
@@ -49,35 +51,35 @@ func resourceTask() *schema.Resource {
 				Optional: true,
 			},
 			"subtasks": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"assignees": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"labels": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"comments": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},
 			},
 			"attachments": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
@@ -108,7 +110,7 @@ func resourceCreateTask(ctx context.Context, d *schema.ResourceData, m interface
 		task["due_date"] = due_date.(string)
 	}
 	if assignees, ok := d.GetOk("assignees"); ok {
-		task["assignee_ids"] = assignees.([]interface{})
+		task["assignee_ids"] = assignees.(*schema.Set).List()
 	}
 	if parentTaskId, ok := d.GetOk("parent_task_id"); ok {
 		task["parent_task_id"] = parentTaskId.(int)
@@ -116,7 +118,7 @@ func resourceCreateTask(ctx context.Context, d *schema.ResourceData, m interface
 		task["parent_task_id"] = 0
 	}
 	if labels, ok := d.GetOk("labels"); ok {
-		task["label_ids"] = labels.([]interface{})
+		task["label_ids"] = labels.(*schema.Set).List()
 	}
 
 	var created map[string]interface{}
@@ -176,7 +178,7 @@ func resourceUpdateTask(ctx context.Context, d *schema.ResourceData, m interface
 
 	task = map[string]interface{}{}
 	if assignees, ok := d.GetOk("assignees"); ok {
-		task["assignees"] = assignees.([]interface{})
+		task["assignees"] = assignees.(*schema.Set).List()
 	}
 	updated = map[string]interface{}{}
 	if err := client.Put("api/tasks/"+d.Id()+"/add-assignee", task, &updated); err != nil {
@@ -202,7 +204,7 @@ func resourceUpdateTask(ctx context.Context, d *schema.ResourceData, m interface
 
 	task = map[string]interface{}{}
 	if labels, ok := d.GetOk("labels"); ok {
-		task["labels"] = labels.([]interface{})
+		task["labels"] = labels.(*schema.Set).List()
 	}
 	updated = map[string]interface{}{}
 	if err := client.Put("api/tasks/"+d.Id()+"/add-labels", task, &updated); err != nil {
@@ -231,12 +233,73 @@ func resourceReadTask(ctx context.Context, d *schema.ResourceData, m interface{}
 	d.Set("priority", result["priority"])
 	d.Set("creator_id", result["creator_id"])
 	d.Set("team_id", result["team_id"])
-	d.Set("assignees", result["assignees"])
+
+	var assigneeIDs []int
+	if assigneesRaw, ok := result["assignees"].([]interface{}); ok {
+		for _, assignee := range assigneesRaw {
+			if assigneeMap, ok := assignee.(map[string]interface{}); ok {
+				if idFloat, ok := assigneeMap["ID"].(float64); ok {
+					assigneeIDs = append(assigneeIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	sort.Ints(assigneeIDs)
+	d.Set("assignees", assigneeIDs)
+
 	d.Set("parent_task_id", result["parent_task_id"])
-	d.Set("subtasks", result["subtasks"])
-	d.Set("labels", result["labels"])
-	d.Set("comments", result["comments"])
-	d.Set("attachments", result["attachments"])
+
+	var subTaskIDs []int
+	if subTaskRaw, ok := result["subtasks"].([]interface{}); ok {
+		for _, subTask := range subTaskRaw {
+			if subTaskMap, ok := subTask.(map[string]interface{}); ok {
+				if idFloat, ok := subTaskMap["ID"].(float64); ok {
+					subTaskIDs = append(subTaskIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	sort.Ints(subTaskIDs)
+	d.Set("subtasks", subTaskIDs)
+
+	var labelIDs []int
+	if labelRaw, ok := result["labels"].([]interface{}); ok {
+		for _, label := range labelRaw {
+			if labelMap, ok := label.(map[string]interface{}); ok {
+				if idFloat, ok := labelMap["ID"].(float64); ok {
+					labelIDs = append(labelIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	sort.Ints(labelIDs)
+	d.Set("labels", labelIDs)
+
+	var commentIDs []int
+	if commentRaw, ok := result["comments"].([]interface{}); ok {
+		for _, comment := range commentRaw {
+			if commentMap, ok := comment.(map[string]interface{}); ok {
+				if idFloat, ok := commentMap["ID"].(float64); ok {
+					commentIDs = append(commentIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	sort.Ints(commentIDs)
+	d.Set("comments", commentIDs)
+
+	var attachmantIDs []int
+	if attachmantRaw, ok := result["attachments"].([]interface{}); ok {
+		for _, attachmant := range attachmantRaw {
+			if attachmantMap, ok := attachmant.(map[string]interface{}); ok {
+				if idFloat, ok := attachmantMap["ID"].(float64); ok {
+					attachmantIDs = append(attachmantIDs, int(idFloat))
+				}
+			}
+		}
+	}
+	sort.Ints(attachmantIDs)
+	d.Set("attachments", attachmantIDs)
 
 	return nil
 }
