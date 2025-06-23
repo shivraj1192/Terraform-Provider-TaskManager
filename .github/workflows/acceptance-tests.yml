@@ -58,6 +58,7 @@ jobs:
         env:
           TF_ACC: 1
           BASE_URL: ${{secrets.BASE_URL}}
+          TOKEN: ${{ env.TOKEN }}
         run: go test -v ./test_taskmanager
 
       - name: Show container logs
