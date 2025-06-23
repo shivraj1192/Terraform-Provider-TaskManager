@@ -51,7 +51,11 @@ This Terraform provider lets you manage users, teams, tasks, comments, and attac
 
 ```
 .
+├── .github/
+│   └── workflows
+│   │   └── acceptance-tests.yml
 ├── taskmanager/
+│   ├── client.go
 │   ├── provider.go
 │   ├── resource_team.go
 │   ├── resource_user.go
@@ -65,13 +69,7 @@ This Terraform provider lets you manage users, teams, tasks, comments, and attac
 │   └── data_source_attachment.go
 ├── test_taskmanager/
 │   ├── provider_test.go
-│   ├── resource_user_test.go
-│   ├── resource_team_test.go
-│   ├── resource_task_test.go
-│   ├── resource_comment_test.go
-│   ├── resource_attachment_test.go
-│   ├── data_source_test.go
-│   ├── test_helper.go
+│   ├── resource_test.go
 │   └── Provider_Test.md
 ├── test_taskmanager_with_HCL/
 │   ├── static
@@ -80,6 +78,7 @@ This Terraform provider lets you manage users, teams, tasks, comments, and attac
 ├── main.go
 ├── go.mod
 ├── go.sum
+├── get_token.sh
 ├── README.md
 └── Terraform_Provider_Taskmanager_Doc.md
 ```
