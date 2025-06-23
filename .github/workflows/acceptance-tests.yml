@@ -54,6 +54,15 @@ jobs:
             shivraj1192/taskmanager-go:latest
           sleep 10
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Make get_token.sh executable
+        run: chmod +x get_token.sh
+
+      - name: Generate token from backend
+        run: ./get_token.sh
+
       - name: Run Acceptance Tests
         env:
           TF_ACC: 1
