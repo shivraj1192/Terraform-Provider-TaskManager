@@ -263,7 +263,13 @@ terraform {
 
 provider "taskmanager" {
   base_url = "http://localhost:8080/"
-  token    = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE3NDk2MTgwNzUsInVzZXJfaWQiOjF9.ZctJvp90AVQFYU55TCfhtGscWrHPMoyk-GCamtCOa9A"
+  token    = var.taskmanager_token
+}
+
+variable "taskmanager_token" {
+  description = "API token for TaskManager-Go"
+  type        = string
+  sensitive   = true
 }
 ```
 
@@ -276,7 +282,31 @@ provider "taskmanager" {
 - **provider "taskmanager" block**:  
   - `base_url`: The URL where your TaskManager-Go API is running (default: `http://localhost:8080/`).
   - `token`: The API token for authenticating requests.  
-    You must generate this token by registering and logging in to your TaskManager-Go API (see the guide above for how to get it using Postman).
+    **Do not hardcode your token.** Use a variable as shown above.
+
+- **variable "taskmanager_token" block**:  
+  Declares a sensitive variable for your API token.
+
+**How to provide your token securely:**  
+Set the variable via environment variable or `terraform.tfvars` file.  
+For example, in your terminal:
+
+```sh
+# On Windows (Command Prompt)
+set TF_VAR_taskmanager_token=PASTE_YOUR_TOKEN_HERE
+
+# On Windows (PowerShell)
+$env:TF_VAR_taskmanager_token="PASTE_YOUR_TOKEN_HERE"
+
+# On Linux/Mac
+export TF_VAR_taskmanager_token=PASTE_YOUR_TOKEN_HERE
+```
+
+Or, create a `terraform.tfvars` file (do NOT commit this file):
+
+```hcl
+taskmanager_token = "PASTE_YOUR_TOKEN_HERE"
+```
 
 **Note:**  
 Never commit your real API token to a public repository.  
@@ -364,12 +394,6 @@ Contributions are welcome! Please follow these steps:
 3. Make your changes
 4. Run tests to ensure they pass
 5. Submit a pull request
-
----
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 

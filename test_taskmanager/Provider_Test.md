@@ -2,6 +2,27 @@
 
 This directory contains tests for the TaskManager Terraform provider. The tests are organized into several categories and are designed to ensure the provider works correctly with the TaskManager-Go API.
 
+## Table of Contents
+
+- [Test Categories](#test-categories)
+- [Prerequisites](#prerequisites)
+- [Environment Variables](#environment-variables)
+- [Running the Tests](#running-the-tests)
+  - [Unit Tests](#unit-tests)
+  - [Acceptance Tests](#acceptance-tests)
+- [Test Structure](#test-structure)
+- [Important Notes on Test Implementation](#important-notes-on-test-implementation)
+  - [Provider Factories](#provider-factories)
+  - [Skipping Tests](#skipping-tests)
+- [Adding New Tests](#adding-new-tests)
+- [Mocking](#mocking)
+- [Debugging Tests](#debugging-tests)
+- [Common Issues and Solutions](#common-issues-and-solutions)
+  - [Type Mismatch Errors](#type-mismatch-errors)
+  - [Import Errors](#import-errors)
+  - [API Connection Issues](#api-connection-issues)
+- [Continuous Integration](#continuous-integration)
+
 ## Test Categories
 
 - **Unit Tests**: Tests for individual functions and methods without requiring a running API
@@ -45,24 +66,6 @@ export TASKMANAGER_TOKEN="your-api-token"
 export TASKMANAGER_BASE_URL="http://localhost:8080/"
 
 # Run the tests
-go test -v ./...
-```
-
-On Windows (PowerShell):
-
-```powershell
-$env:TF_ACC=1
-$env:TASKMANAGER_TOKEN="your-api-token"
-$env:TASKMANAGER_BASE_URL="http://localhost:8080/"
-
-go test -v ./...
-```
-
-### Testing Specific Files
-
-To run tests in a specific file:
-
-```sh
 go test -v ./test_taskmanager -run TestProvider
 ```
 
