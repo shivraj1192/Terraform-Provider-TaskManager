@@ -155,6 +155,7 @@ func resourceReadTeam(ctx context.Context, d *schema.ResourceData, m interface{}
 			}
 		}
 	}
+	sort.Ints(taskIDs)
 	d.Set("tasks", taskIDs)
 
 	return nil

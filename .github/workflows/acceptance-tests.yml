@@ -35,21 +35,24 @@ jobs:
         with:
           go-version: '1.22'
 
-      - name: Checkout TaskManager backend
-        uses: actions/checkout@v4
-        with:
-          repository: shivraj1192/TaskManager-Go
-          path: backend
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Download Go modules for backend
-        working-directory: backend
-        run: go mod download
+      - name: Pull private backend image
+        run: docker pull shivraj1192/taskmanager-go:latest
 
-      - name: Start TaskManager backend
-        working-directory: backend
+      - name: Run TaskManager backend container
         run: |
-          nohup go run ./cmd/main.go > server.log 2>&1 &
-          sleep 5
+          docker run -d --name taskmanager-backend \
+            --network host \
+            -e DB_HOST=localhost \
+            -e DB_PORT=5432 \
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            -e DB_NAME=taskmanager \
+            -p 8080:8080 \
+            shivraj1192/taskmanager-go:latest
+          sleep 10
 
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -57,16 +60,16 @@ jobs:
       - name: Make get_token.sh executable
         run: chmod +x get_token.sh
 
-      - name: Get token for test user
+      - name: Generate token from backend
         run: ./get_token.sh
 
       - name: Run Acceptance Tests
         env:
           TF_ACC: 1
-          BASE_URL: http://localhost:8080/
+          BASE_URL: ${{secrets.BASE_URL}}
           TOKEN: ${{ env.TOKEN }}
         run: go test -v ./test_taskmanager
 
-      - name: Show backend logs
+      - name: Show container logs
         if: always()
-        run: cat backend/server.log
+        run: docker logs taskmanager-backend
